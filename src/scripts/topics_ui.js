@@ -1,13 +1,13 @@
 /**
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates.
  * Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
  */
 
 define([
   'jquery',
   'contentSDK',
-  'scripts/server-config-utils.js',
-  'scripts/services.js',
+  'serverUtils',
+  'services',
 ], ($, contentSDK, serverUtils, services) => {
   /**
    * Display error message if content couldn't be loaded
@@ -71,10 +71,10 @@ define([
    *
    */
   function appendTopicTitle(parentContainer, text) {
-    const html = `<div class="button-wrapper">
-                        <div class="button">${text}</div>
-                    </div>`;
-    parentContainer.append(html);
+    const div = $('<div>')
+      .attr('class', 'button-wrapper')
+      .appendTo(parentContainer);
+    $('<div />').attr('class', 'button').text(text).appendTo(div);
   }
 
   /**
@@ -114,8 +114,10 @@ define([
   function appendTopicDetail(parentContainer, detailText) {
     // Strip out html from the text
     // let plainText = $(detailText).text();
-    const html = `<div class="desc-wrapper"><div class="description">${detailText}</div></div>`;
-    parentContainer.append(html);
+    const div = $('<div>')
+      .attr('class', 'desc-wrapper')
+      .appendTo(parentContainer);
+    $('<div />').attr('class', 'description').text(detailText).appendTo(div);
   }
 
   /**

@@ -1,15 +1,16 @@
 /**
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates.
  * Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
  */
 
 define([
   'jquery',
   'contentSDK',
-  'scripts/server-config-utils.js',
-  'scripts/utils.js',
-  'scripts/services.js',
-], ($, contentSDK, serverUtils, utils, services) => {
+  'serverUtils',
+  'lib/utils.js',
+  'services',
+  'xss',
+], ($, contentSDK, serverUtils, utils, services, xss) => {
   /**
    * Populate the article title
    *
@@ -85,7 +86,13 @@ define([
 
   function populateContent(content) {
     const articleContent = $('.content');
-    articleContent.html(content);
+    const options = {
+      stripIgnoreTag: true, // filter out all HTML not in the whitelist
+      stripIgnoreTagBody: ['script'], // the script tag is a special case, we need
+      // to filter out its content
+    };
+    const cleanContent = xss(content, options);
+    articleContent.html(cleanContent);
   }
 
   /**
@@ -99,10 +106,10 @@ define([
         // Obtain the delivery client from the Content Delivery SDK
         const deliveryClient = contentSDK.createDeliveryClient(serverconfig);
 
-        const params = new URLSearchParams(window.location.search);
-        const articleID = params.get('articleId');
-        const topicName = decodeURIComponent(params.get('topicName'));
-        const topicId = decodeURIComponent(params.get('topicId'));
+        const articleID = utils.getSearchParam('articleId');
+        const topicId = utils.getSearchParam('topicId');
+        const topicName = utils.getSearchParam('topicName');
+
         services
           .fetchArticle(deliveryClient, articleID)
           .then((article) => {

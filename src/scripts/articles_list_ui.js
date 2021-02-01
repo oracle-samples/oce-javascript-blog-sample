@@ -1,14 +1,14 @@
 /**
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates.
  * Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
  */
 
 define([
   'jquery',
   'contentSDK',
-  'scripts/server-config-utils.js',
-  'scripts/utils.js',
-  'scripts/services.js',
+  'serverUtils',
+  'lib/utils.js',
+  'services',
 ], ($, contentSDK, serverUtils, utils, services) => {
   /**
    * Create and populate the <img> used to represent the thumbnail of the article
@@ -93,9 +93,8 @@ define([
         // Obtain the delivery client from the Content Delivery SDK
         const deliveryClient = contentSDK.createDeliveryClient(serverconfig);
 
-        const params = new URLSearchParams(window.location.search);
-        const topicId = decodeURIComponent(params.get('topicId'));
-        const topicName = decodeURIComponent(params.get('topicName'));
+        const topicId = utils.getSearchParam('topicId');
+        const topicName = utils.getSearchParam('topicName');
 
         services
           .fetchArticles(deliveryClient, topicId)

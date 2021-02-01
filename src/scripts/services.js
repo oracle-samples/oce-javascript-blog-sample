@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates.
  * Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
  */
 
@@ -9,6 +9,20 @@
  */
 
 define(() => ({
+  /*
+   * Utility method to log an error.
+   */
+  logError(message, error) {
+    if (error && error.statusMessage) {
+      console.log(`${message} : `, error.statusMessage);
+    } else if (error.error && error.error.code && error.error.code === 'ETIMEDOUT') {
+      console.log(`${message} : `, error);
+    } else if (error.error && error.error.code) {
+      console.log(`${message} : `, error.error.code);
+    } else if (error) {
+      console.error(message, error);
+    }
+  },
 
   /**
    * Fetch the top level values to be displayed on the home page.
@@ -32,7 +46,7 @@ define(() => ({
         };
 
         return returnVal;
-      });
+      }).catch((error) => this.logError('Fetching home page data failed', error));
   },
 
   /**
@@ -49,7 +63,8 @@ define(() => ({
         fields: 'all',
         expand: 'all',
       })
-      .then((topic) => topic);
+      .then((topic) => topic)
+      .catch((error) => this.logError('Fetching topic failed', error));
   },
 
   /**
@@ -62,11 +77,12 @@ define(() => ({
   fetchArticles(client, topicId) {
     return client
       .queryItems({
-        "q": , // SEE TUTORIAL
+        q: `(type eq "OCEGettingStartedArticle" AND fields.topic eq "${topicId}")`, 
         fields: 'all',
         orderBy: 'fields.published_date:desc',
       })
-      .then((articles) => articles.items);
+      .then((articles) => articles.items)
+      .catch((error) => this.logError('Fetching articles failed', error));
   },
 
   /**
@@ -80,9 +96,10 @@ define(() => ({
     return client
       .getItem({
         id: articleId,
-        "expand": // SEE TUTORIAL
+        expand: 'all', 
       })
-      .then((article) => article);
+      .then((article) => article)
+      .catch((error) => this.logError('Fetching article failed', error));
   },
 
   /**
@@ -109,7 +126,7 @@ define(() => ({
         const self = format.links.filter((item) => item.rel === 'self')[0];
         const url = self.href;
         return url;
-      });
+      }).catch((error) => this.logError('Fetching medium rendition URL failed', error));
   },
 
   /**

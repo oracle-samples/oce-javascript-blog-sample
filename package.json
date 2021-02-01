@@ -1,26 +1,31 @@
 {
   "name": "oce-javascript-blog-sample",
-  "version": "20.2.3",
+  "version": "21.1.2",
   "description": "",
   "author": "Oracle America, Inc.",
   "license": "UPL-1.0",
   "main": "src/server/server.js",
   "scripts": {
-    "build": "echo nothing needs building.",
+    "build": "babel src/scripts -d src/lib",
     "test": "echo no tests found.",
     "lint": "eslint ./src/config ./src/scripts ./src/server --ext .js,.mjs",
     "postinstall": "node --experimental-modules setup/postinstall.mjs",
     "start": "node --experimental-modules src/server/server.mjs"
   },
   "dependencies": {
+    "babel-polyfill": "~6.26.0",
     "contentsdk": "https://samples.mycontentdemo.com/_sitesclouddelivery/renderer/app/sdk/npm/contentsdk-1.1.0.tgz",
     "express": "~4.17.1",
     "jquery": "~3.5.1",
-    "requirejs": "~2.3.6"
+    "requirejs": "~2.3.6",
+    "xss": "~1.0.8"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2"
+    "@babel/cli": "~7.12.1",
+    "@babel/core": "~7.12.3",
+    "@babel/preset-env": "~7.12.1",
+    "eslint": "~7.11.0",
+    "eslint-config-airbnb-base": "~14.2.0",
+    "eslint-plugin-import": "~2.22.1"
   }
 }

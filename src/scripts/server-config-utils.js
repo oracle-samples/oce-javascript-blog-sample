@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates.
  * Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
  */
 
@@ -30,6 +30,9 @@ define(['jquery'], ($) => {
         contentVersion: serverVersion,
         channelToken: serverToken,
       };
+
+      // Add the following if you want logging from the ContentSDK shown in the console
+      // serverconfig.logger = console;
 
       resolve(serverConfig);
     }).fail(() => {
