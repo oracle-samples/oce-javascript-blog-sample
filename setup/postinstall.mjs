@@ -14,6 +14,6 @@ if (!existsSync(libDir)) {
 
 copyFileSync('node_modules/requirejs/require.js', `${libDir}/require.js`);
 copyFileSync('node_modules/jquery/dist/jquery.js', `${libDir}/jquery.js`);
-copyFileSync('node_modules/contentsdk/content.min.js', `${libDir}/content.js`);
+copyFileSync('node_modules/@oracle/content-management-sdk/dist/content.umd.js', `${libDir}/contentsdk.js`);
 copyFileSync('node_modules/babel-polyfill/dist/polyfill.js', `${libDir}/polyfill.js`);
 copyFileSync('node_modules/xss/dist/xss.js', `${libDir}/xss.js`);

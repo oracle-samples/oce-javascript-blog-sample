@@ -8,7 +8,7 @@ requirejs.config({
   baseUrl: 'lib',
   paths: {
     jquery: 'jquery',
-    contentSDK: 'content',
+    contentsdk: 'contentsdk',
     polyfill: 'polyfill',
     serverUtils: 'server-config-utils',
     services: 'services',

@@ -1,7 +1,7 @@
 {
   "name": "oce-javascript-blog-sample",
-  "version": "21.1.2",
-  "description": "",
+  "version": "21.7.1",
+  "description": "A simple blog site built using JavaScript and Oracle Content Management",
   "author": "Oracle America, Inc.",
   "license": "UPL-1.0",
   "main": "src/server/server.js",
@@ -13,10 +13,11 @@
     "start": "node --experimental-modules src/server/server.mjs"
   },
   "dependencies": {
+    "@oracle/content-management-sdk": "~1.2.0",
     "babel-polyfill": "~6.26.0",
-    "contentsdk": "https://samples.mycontentdemo.com/_sitesclouddelivery/renderer/app/sdk/npm/contentsdk-1.1.0.tgz",
     "express": "~4.17.1",
     "jquery": "~3.5.1",
+    "node-fetch": "~2.6.1",
     "requirejs": "~2.3.6",
     "xss": "~1.0.8"
   },

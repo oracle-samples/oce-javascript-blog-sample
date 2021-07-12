@@ -5,11 +5,10 @@
 
 define([
   'jquery',
-  'contentSDK',
   'serverUtils',
   'lib/utils.js',
   'services',
-], ($, contentSDK, serverUtils, utils, services) => {
+], ($, serverUtils, utils, services) => {
   /**
    * Create and populate the <img> used to represent the thumbnail of the article
    *
@@ -21,17 +20,19 @@ define([
    *
    */
   function createArticleThumbnail(
-    deliveryClient,
+    client,
     articleContainer,
     imageIdentifier,
   ) {
     // create the image element first else placement is not guaranteed as it will depend
     // on when response comes back
     const imgElement = $('<img />').appendTo(articleContainer);
-    services
-      .getMediumRenditionURL(deliveryClient, imageIdentifier)
+    services.getMediumRenditionURL(client, imageIdentifier)
       .then((url) => {
-        imgElement.attr('src', url);
+        utils.getImageUrl(url)
+          .then((formattedUrl) => {
+            imgElement.attr('src', formattedUrl);
+          });
       })
       .catch((error) => console.error(error));
   }
@@ -47,7 +48,7 @@ define([
    *
    */
   function createArticleListItem(
-    deliveryClient,
+    client,
     parentContainer,
     article,
     topicName,
@@ -68,7 +69,7 @@ define([
       .attr('class', 'date')
       .appendTo(div);
     createArticleThumbnail(
-      deliveryClient,
+      client,
       articleContainer,
       article.fields.image.id,
     );
@@ -87,17 +88,13 @@ define([
    *  For tutorial purposes only, any errors encountered are logged to the console
    */
   $(document).ready(() => {
-    // Get the server configuration from the "oce.json" file
-    serverUtils.parseServerConfig
-      .then((serverconfig) => {
-        // Obtain the delivery client from the Content Delivery SDK
-        const deliveryClient = contentSDK.createDeliveryClient(serverconfig);
-
+    // Get the server configuration from the "content.json" file
+    serverUtils.getClient
+      .then((client) => {
         const topicId = utils.getSearchParam('topicId');
         const topicName = utils.getSearchParam('topicName');
 
-        services
-          .fetchArticles(deliveryClient, topicId)
+        services.fetchArticles(client, topicId)
           .then((articles) => {
             $('#spinner').hide();
             // populate breadcrumb
@@ -109,7 +106,7 @@ define([
 
             articles.forEach((article) => {
               createArticleListItem(
-                deliveryClient,
+                client,
                 container,
                 article,
                 topicName,

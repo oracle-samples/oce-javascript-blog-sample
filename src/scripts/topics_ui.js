@@ -5,10 +5,10 @@
 
 define([
   'jquery',
-  'contentSDK',
   'serverUtils',
+  'lib/utils.js',
   'services',
-], ($, contentSDK, serverUtils, services) => {
+], ($, serverUtils, utils, services) => {
   /**
    * Display error message if content couldn't be loaded
    */
@@ -34,18 +34,21 @@ define([
    * For tutorial purposes only, any errors are simply logged to the console
    *
    * @returns none
-   * @param {ContentDeliveryClient} deliveryClient - The delivery client
+   * @param {object} client - The client to connect to CEC with
    * @param {string} logoID - The identifier of the company logo's digital asset
    *
    */
-  function populateHeaderImage(deliveryClient, logoID) {
+  function populateHeaderImage(client, logoID) {
     // create header
     services
-      .getRenditionURL(deliveryClient, logoID)
+      .getRenditionURL(client, logoID)
       .then((url) => {
-        $('#company-thumbnail')
-          .attr('src', `${url}`)
-          .attr('alt', 'Company Logo');
+        utils.getImageUrl(url)
+          .then((formattedUrl) => {
+            $('#company-thumbnail')
+              .attr('src', `${formattedUrl}`)
+              .attr('alt', 'Company Logo');
+          });
       })
       .catch((error) => console.error(error));
   }
@@ -83,22 +86,24 @@ define([
    * For tutorial purposes only, any errors are simply logged to the console
    *
    * @returns none
-   * @param {ContentDeliveryClient} deliveryClient - The delivery client
+   * @param {object} client - The client to connect to CEC with
    * @param {object} parentContainer - The DOM element into which the list of topics will render
    * @param {string} thumbnailIdentifier - The identifier of the thumbnail to display
    *
    */
   function appendTopicThumbnail(
-    deliveryClient,
+    client,
     parentContainer,
     thumbnailIdentifier,
   ) {
     const imgElement = $('<img />').appendTo(parentContainer);
-
     services
-      .getMediumRenditionURL(deliveryClient, thumbnailIdentifier)
+      .getMediumRenditionURL(client, thumbnailIdentifier)
       .then((url) => {
-        imgElement.attr('src', url);
+        utils.getImageUrl(url)
+          .then((formattedUrl) => {
+            imgElement.attr('src', formattedUrl);
+          });
       })
       .catch((error) => console.error(error));
   }
@@ -127,12 +132,12 @@ define([
    * For tutorial purposes only, any errors are simply logged to the console
    *
    * @returns none
-   * @param {ContentDeliveryClient} deliveryClient - The delivery client
+   * @param {object} client - The client to connect to CEC with
    * @param {[string]} topics - A collection of identifiers representing the topics to display
    * @param {object} container - The DOM element into which the topic should be rendered.
    *
    */
-  function populateTopicListing(deliveryClient, topicIdentifiers, container) {
+  function populateTopicListing(client, topicIdentifiers, container) {
     // Fetch information about each topic so that we can display all of the detail information
     // about the topic
     topicIdentifiers.forEach((id) => {
@@ -142,8 +147,7 @@ define([
         .appendTo(container);
 
       // fetch the topic
-      services
-        .fetchTopic(deliveryClient, id)
+      services.fetchTopic(client, id)
         .then((topic) => {
           // assign a click event on the topic container
           topicContainer.click(() => {
@@ -153,7 +157,7 @@ define([
           });
           appendTopicTitle(topicContainer, topic.name);
           appendTopicThumbnail(
-            deliveryClient,
+            client,
             topicContainer,
             topic.fields.thumbnail.id,
           );
@@ -168,26 +172,22 @@ define([
    *  For tutorial purposes only, any errors encountered are logged to the console
    */
   $(document).ready(() => {
-    // Get the server configuration from the "oce.json" file
-    serverUtils.parseServerConfig
-      .then((serverconfig) => {
-        // Obtain the delivery client from the Content Delivery SDK
-        const deliveryClient = contentSDK.createDeliveryClient(serverconfig);
-
+    // Get the server configuration from the "content.json" file
+    serverUtils.getClient
+      .then((client) => {
         // get the top level topics
-        services
-          .fetchHomePage(deliveryClient)
+        services.fetchHomePage(client)
           .then((topLevelItem) => {
             $('#spinner').hide();
             populateHeaderTitle(topLevelItem.title);
-            populateHeaderImage(deliveryClient, topLevelItem.logoID);
+            populateHeaderImage(client, topLevelItem.logoID);
             populateHeaderUrls(topLevelItem.aboutUrl, topLevelItem.contactUrl);
 
             const container = $('#topics');
             const topicIdentifiers = topLevelItem.topics.map(
               (topic) => topic.id,
             );
-            populateTopicListing(deliveryClient, topicIdentifiers, container);
+            populateTopicListing(client, topicIdentifiers, container);
           })
           .catch((error) => {
             $('#spinner').hide();

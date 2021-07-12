@@ -5,12 +5,11 @@
 
 define([
   'jquery',
-  'contentSDK',
   'serverUtils',
   'lib/utils.js',
   'services',
   'xss',
-], ($, contentSDK, serverUtils, utils, services, xss) => {
+], ($, serverUtils, utils, services, xss) => {
   /**
    * Populate the article title
    *
@@ -33,18 +32,20 @@ define([
    * Populate the article author information section
    *
    * @returns none
-   * @param {ContentDeliveryClient} deliveryClient - The delivery client
+   * @param {Contentclient} client - The client to connect to CEC with
    * @param {object} author - The author object of the article
    * @param {object} createdDate - The createdDate object of the article
    */
 
-  function populateAuthor(deliveryClient, author, createdDate) {
+  function populateAuthor(client, author, createdDate) {
     const imgElement = $('.author img');
     // Retrieve rendition url
-    services
-      .getMediumRenditionURL(deliveryClient, author.fields.avatar.id)
+    services.getMediumRenditionURL(client, author.fields.avatar.id)
       .then((url) => {
-        imgElement.attr('src', url);
+        utils.getImageUrl(url)
+          .then((formattedUrl) => {
+            imgElement.attr('src', formattedUrl);
+          });
       });
     $('.title').text(author.name);
     $('.date').text(`Posted on ${utils.dateToMDY(createdDate.value)}`);
@@ -56,22 +57,24 @@ define([
    * For tutorial purposes only, any errors are simply logged to the console
    *
    * @returns none
-   * @param {ContentDeliveryClient} deliveryClient - The delivery client
+   * @param {Contentclient} client - The delivery client
    * @param {string} articleImageIdentifier - The identifier of the article to display
    * @param {string} articleCaption - The caption for the article
    */
 
   function populateImage(
-    deliveryClient,
+    client,
     articleImageIdentifier,
     articleCaption,
   ) {
     const imgElement = $('#article > figure > img');
     $('#article > figure > figcaption').text(articleCaption);
-    services
-      .getRenditionURL(deliveryClient, articleImageIdentifier)
+    services.getRenditionURL(client, articleImageIdentifier)
       .then((url) => {
-        imgElement.attr('src', url);
+        utils.getImageUrl(url)
+          .then((formattedUrl) => {
+            imgElement.attr('src', formattedUrl);
+          });
       })
       .catch((error) => console.error(error));
   }
@@ -100,28 +103,24 @@ define([
    *  For tutorial purposes only, any errors encountered are logged to the console
    */
   $(document).ready(() => {
-    // Get the server configuration from the "oce.json" file
-    serverUtils.parseServerConfig
-      .then((serverconfig) => {
-        // Obtain the delivery client from the Content Delivery SDK
-        const deliveryClient = contentSDK.createDeliveryClient(serverconfig);
-
+    // Get the server configuration from the "content.json" file
+    serverUtils.getClient
+      .then((client) => {
         const articleID = utils.getSearchParam('articleId');
         const topicId = utils.getSearchParam('topicId');
         const topicName = utils.getSearchParam('topicName');
 
-        services
-          .fetchArticle(deliveryClient, articleID)
+        services.fetchArticle(client, articleID)
           .then((article) => {
             $('#spinner').hide();
             populateTitle(article.name, topicName, topicId);
             populateAuthor(
-              deliveryClient,
+              client,
               article.fields.author,
               article.fields.published_date,
             );
             populateImage(
-              deliveryClient,
+              client,
               article.fields.image.id,
               article.fields.image_caption,
             );

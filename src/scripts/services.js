@@ -5,7 +5,7 @@
 
 /**
  * This file contains a number of utility methods used to obtain data
- * from the server using the ContentSDK JavaScript Library.
+ * from the server using the Oracle Content SDK JavaScript Library.
  */
 
 define(() => ({
@@ -31,11 +31,9 @@ define(() => ({
    * @returns {Promise({object})} - A Promise containing the data to display on the top level page
    */
   fetchHomePage(client) {
-    return client
-      .queryItems({
-        q: '(type eq "OCEGettingStartedHomePage" AND name eq "HomePage")',
-        fields: 'all',
-      })
+    return client.queryItems({
+      q: '(type eq "OCEGettingStartedHomePage" AND name eq "HomePage")',
+    })
       .then((topLevelItem) => {
         const returnVal = {
           logoID: topLevelItem.items[0].fields.company_logo.id,
@@ -57,12 +55,10 @@ define(() => ({
    * @returns {*} - the topic
    */
   fetchTopic(client, topicId) {
-    return client
-      .getItem({
-        id: topicId,
-        fields: 'all',
-        expand: 'all',
-      })
+    return client.getItem({
+      id: topicId,
+      expand: 'fields.thumbnail',
+    })
       .then((topic) => topic)
       .catch((error) => this.logError('Fetching topic failed', error));
   },
@@ -75,12 +71,10 @@ define(() => ({
    * @returns {*} - the list of articles for the topic
    */
   fetchArticles(client, topicId) {
-    return client
-      .queryItems({
-        q: `(type eq "OCEGettingStartedArticle" AND fields.topic eq "${topicId}")`, 
-        fields: 'all',
-        orderBy: 'fields.published_date:desc',
-      })
+    return client.queryItems({
+      q: `(type eq "OCEGettingStartedArticle" AND fields.topic eq "${topicId}")`,
+      orderBy: 'fields.published_date:desc',
+    })
       .then((articles) => articles.items)
       .catch((error) => this.logError('Fetching articles failed', error));
   },
@@ -93,11 +87,10 @@ define(() => ({
    * @returns {*} - the article
    */
   fetchArticle(client, articleId) {
-    return client
-      .getItem({
-        id: articleId,
-        expand: 'all', 
-      })
+    return client.getItem({
+      id: articleId,
+      expand: 'fields.author',
+    })
       .then((article) => article)
       .catch((error) => this.logError('Fetching article failed', error));
   },
@@ -110,12 +103,10 @@ define(() => ({
    * @returns {String} - the Medium Rendition URL
    */
   getMediumRenditionURL(client, identifier) {
-    return client
-      .getItem({
-        id: identifier,
-        fields: 'all',
-        expand: 'all',
-      })
+    return client.getItem({
+      id: identifier,
+      expand: 'fields.renditions',
+    })
       .then((asset) => {
         const object = asset.fields.renditions.filter(
           (item) => item.name === 'Medium',
