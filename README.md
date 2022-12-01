@@ -17,7 +17,7 @@ npm install
 > **NOTE:** If you need to use a proxy to reach the internet then define an oce_https_proxy environment variable:
 
 ```shell
-export oce_https_proxy=\<scheme\>://\<proxyhost\>:\<port\>
+export oce_https_proxy=<scheme>://<proxyhost>:<port>
 ```
 
 To build this project:
@@ -40,7 +40,7 @@ and then open [http://localhost:8080/oce-javascript-blog-sample/index.html](http
 
 ## Images
 
-Sample images may be downloaded from [https://www.oracle.com/middleware/technologies/content-experience-downloads.html](https://www.oracle.com/middleware/technologies/content-experience-downloads.html) under a separate license.  These images are provided for reference purposes only and may not hosted or redistributed by you.
+Sample images may be downloaded from [https://www.oracle.com/middleware/technologies/content-experience-downloads.html](https://www.oracle.com/middleware/technologies/content-experience-downloads.html) under a separate license.  These images are provided for reference purposes only and may not be hosted or redistributed by you.
 
 ## Contributing
 
