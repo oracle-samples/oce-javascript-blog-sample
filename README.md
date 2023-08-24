@@ -54,5 +54,5 @@ vulnerability disclosure process.
 
 ## License
 
-Copyright (c) 2020, 2021 Oracle and/or its affiliates and released under the
+Copyright (c) 2020, 2023 Oracle and/or its affiliates and released under the
 [Universal Permissive License (UPL)](https://oss.oracle.com/licenses/upl/), Version 1.0
